@@ -19,7 +19,6 @@ class GuardInRangeTest extends TestCase
      * @param mixed $value
      * @param mixed $min
      * @param mixed $max
-     * @param bool $expectedResult
      * @param string $expectedExceptionMessage
      *
      * @throws GuardException
@@ -28,7 +27,6 @@ class GuardInRangeTest extends TestCase
         mixed $value,
         mixed $min,
         mixed $max,
-        bool $expectedResult,
         string $expectedExceptionMessage
     ): void {
 
@@ -37,25 +35,25 @@ class GuardInRangeTest extends TestCase
             static::expectExceptionMessage($expectedExceptionMessage);
         }
 
-        $result = Guard::inRange($value, $min, $max);
+        Guard::inRange($value, $min, $max);
 
         if ($expectedExceptionMessage === '') {
-            static::assertSame($expectedResult, $result);
+            static::assertTrue(true);
         }
     }
 
     /**
-     * @return array<int,array{mixed,mixed,mixed,bool,string}>
+     * @return array<int,array{mixed,mixed,mixed,string}>
      */
     public static function inRangeDataProvider(): array
     {
         return [
-            [5, 1, 10, true, ''],
-            [5.5, 1, 10, true, ''],
-            [15, 1, 10, false, 'value out of range'],
-            [0, 1, 10, false, 'value out of range'],
-            [10, 1, 10, true, ''],
-            [1, 1, 10, true, ''],
+            [5, 1, 10, ''],
+            [5.5, 1, 10, ''],
+            [11, 1, 10, 'value out of range'],
+            [0, 1, 10, 'value out of range'],
+            [10, 1, 10, ''],
+            [1, 1, 10, ''],
         ];
     }
 }

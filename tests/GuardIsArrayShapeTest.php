@@ -18,7 +18,6 @@ class GuardIsArrayShapeTest extends TestCase
      *
      * @param array<string, mixed> $array
      * @param array<string, mixed> $shape
-     * @param bool $expectedResult
      * @param string $expectedExceptionMessage
      *
      * @throws GuardException
@@ -26,21 +25,24 @@ class GuardIsArrayShapeTest extends TestCase
     public function testIsArrayShape(
         array $array,
         array $shape,
-        bool $expectedResult,
         string $expectedExceptionMessage
     ): void {
+
         if ($expectedExceptionMessage !== '') {
             static::expectException(GuardException::class);
             static::expectExceptionMessage($expectedExceptionMessage);
         }
 
-        $result = Guard::isArrayShape($array, $shape);
+        Guard::isArrayShape($array, $shape);
 
-        static::assertSame($expectedResult, $result);
+        if ($expectedExceptionMessage === '') {
+            static::assertTrue(true);
+        }
+
     }
 
     /**
-     * @return array<int, array{array<string, mixed>, array<string, mixed>, bool, string}>
+     * @return array<int, array{array<string, mixed>, array<string, mixed>, string}>
      */
     public static function isArrayShapeDataProvider(): array
     {
@@ -49,13 +51,11 @@ class GuardIsArrayShapeTest extends TestCase
             [
                 ['name' => 'John Doe', 'age' => 30, 'email' => 'johndoe@example.com'],
                 ['name' => 'string', 'age' => 'int', 'email' => 'string'],
-                true,
                 '',
             ],
             [
                 ['address' => ['street' => '123 Main St', 'city' => 'New York', 'zip' => '10001']],
                 ['address' => ['street' => 'string', 'city' => 'string', 'zip' => 'string']],
-                true,
                 '',
             ],
 
@@ -63,20 +63,17 @@ class GuardIsArrayShapeTest extends TestCase
             [
                 ['foo' => 'bar'],
                 ['key'=>'string'],
-                false,
                 'foo is invalid',
             ],
             [
                 ['address' => ['street' => '123 Main St', 'city' => 'New York']],
                 ['address' => ['street' => 'string', 'city' => 'string', 'zip' => 'string']],
-                false,
                 'address.zip is missing',
             ],
             [
                 ['address' => ['street' => '123 Main St', 'city' => 'New York', 'zip'=>1]],
                 ['address' => ['street' => 'string', 'city' => 'string', 'zip' => 'string']],
-                false,
-                'address.zip should be string got, int',
+                'address.zip should be string, got int',
             ],
         ];
     }

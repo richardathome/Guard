@@ -1,10 +1,11 @@
-## `inRange(mixed $value, mixed $min, mixed $max): bool`
+![RichBuilds.com Components](/src/richbuilds_logo.png)
 
-Determines whether a value is between a specified minimum and maximum range.
+# 🛡 Guard
 
-This method checks if the given value is greater than or equal to the minimum value and less than or equal to the maximum value, indicating that it falls within the specified range.
+A set of runtime guard methods for PHP 8.1 by [RichBuilds](https://www.richbuilds.com).
 
-### Parameters
+<details>
+<summary>inRange(mixed $value, mixed $min, mixed $max): void</summary>
 
 | Parameter | Type  | Description                                   |
 |-----------|-------|-----------------------------------------------|
@@ -12,80 +13,89 @@ This method checks if the given value is greater than or equal to the minimum va
 | `$min`    | mixed | The minimum value of the range.               |
 | `$max`    | mixed | The maximum value of the range.               |
 
+### Throws
 
-### Return Value
+- `GuardException`: Throws a `GuardException` if the value is out of range.
 
-- (bool): Returns `true` if the value is within the range; otherwise, `false`.
+### Returns
 
-### Example
+- `void`
 
-```php
-$value = 5;
-$min = 1;
-$max = 10;
-
-echo Guard::inRange(5, 1, 10); // true
-
-echo Guard::inRange(0, 1, 10); // false
-```
 
 ---
-## `isArrayShape(array $array, array $shape): bool`
 
-Determines whether an array matches the shape described by a given shape array.
+This method checks if the given `$value` is within the range defined by `$min` 
+and `$max`. It throws a `GuardException` if the value is out of range.
 
-This method validates if the provided array matches the expected structure defined by the shape array. It compares the keys and values of the array against the keys and corresponding types in the shape array to check for a match.
-
-### Parameters
-
-- `$array` (array&lt;string, mixed&gt;): The array to be validated against the shape.
-- `$shape` (array&lt;string, mixed&gt;): The shape array describing the expected structure of the array.
-
-### Return Value
-
-- (bool): Returns `true` if the array matches the shape; otherwise, `false`.
-
-### Examples
-
-#### Example 1
+Example usage:
 
 ```php
-$user = [
-    'name' => 'John Doe',
-    'age' => 30,
-    'email' => 'johndoe@example.com',
-];
+try {
+    $value = 5;
+    $min = 0;
+    $max = 10;
 
-$shape = [
-    'name' => 'string',
-    'age' => 'integer',
-    'email' => 'string',
-];
+    Guard::inRange($value, $min, $max);
+    // $result is true
 
-if (Guard::isArrayShape($user, $shape)) {
-    echo 'The array matches the shape.';
-} else {
-    echo 'The array does not match the shape.';
+    // Other code to handle the value within the range
+} catch (GuardException $e) {
+    // Handle the out of range value
 }
 ```
 
-#### Example 2
+Make sure to handle the `GuardException` to handle the case when the value is out of range.
+</details>
+
+<details>
+<summary>isArrayShape(array $array, array $shape, string $chain = ''): bool</summary>
+
+| Parameter | Type                   | Description                                           |
+|-----------|------------------------|-------------------------------------------------------|
+| `$array`  | `array<string, mixed>` | The array to check if it matches the specified shape. |
+| `$shape`  | `array<string, mixed>` | The shape to match the array against.                 |
+| `$chain`  | `string`               | (Optional) The chain of keys for nested arrays.       |
+
+### Throws
+
+- `GuardException`: Throws a `GuardException` if the array does not match the shape.
+
+### Returns
+
+- `void`
+
+
+---
+
+This method checks if the given `$array` matches the shape described by the `$shape` array. It iterates over the keys of both arrays and performs the following checks:
+
+- If a key exists in `$array` but not in `$shape`, it throws a `GuardException` with an "invalid" error message.
+- If a key exists in `$shape` but not in `$array`, it throws a `GuardException` with a "missing" error message.
+- If the value associated with a key in `$array` is an array and the value associated with the same key in `$shape` is also an array, the method recursively calls itself to check if the nested arrays match.
+- If the value associated with a key in `$array` is not of the same type as the value associated with the same key in `$shape`, it throws a `GuardException` with a "type mismatch" error message.
+
+Example usage:
 
 ```php
-$address = [
-    'street' => '123 Main St',
-    'city' => 'New York',
-    'zip' => '10001',
-];
+try {
+    $array = [
+        'name' => 'John',
+        'age' => 25,
+    ];
 
-$shape = [
-    'street' => 'string',
-    'city' => 'string',
-];
+    $shape = [
+        'name' => 'string',
+        'age' => 'integer',
+    ];
 
-if (Guard::isArrayShape($address, $shape)) {
-    echo 'The array matches the shape.';
-} else {
-    echo 'The array does not match the shape.';
+    $result = YourClass::isArrayShape($array, $shape);
+    // $result is true
+
+    // Other code to handle the array matching the shape
+} catch (GuardException $e) {
+    // Handle the error when the array does not match the shape
 }
 ```
+
+Make sure to handle the `GuardException` to handle the case when the array does not match the shape.
+</details>
